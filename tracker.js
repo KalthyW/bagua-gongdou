@@ -58,8 +58,7 @@
     var cfg = window.BAGUA_CONFIG || {};
     var body = JSON.stringify(data);
     try {
-      // apiBase 是字符串（含空字符串）即走云函数：空字符串 = 同域 /api/*
-      if (typeof cfg.apiBase === "string") {
+      if (cfg.apiBase) {
         fetch(String(cfg.apiBase).replace(/\/+$/, "") + path, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
