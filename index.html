@@ -1387,15 +1387,18 @@ function restart(){location.href=location.origin+location.pathname;}
 <script>
 /* 角色卡片：带 AI 立绘的版本（build_test2.py 注入，覆盖原来的 makeCard） */
 (function () {
-  var KEYS = ["qian", "xun", "li", "gen", "dui", "kan", "zhen", "kun"];
+  // 立绘按需加载：首屏不拉图（页面 40KB 秒开），点「生成卡片」时才取当前这一张
   window.__PORTRAITS = {};
-  KEYS.forEach(function (k) {
+  function loadPortrait(key, cb) {
+    if (window.__PORTRAITS[key]) { cb(window.__PORTRAITS[key]); return; }
     var im = new Image();
-    im.onload = function () { window.__PORTRAITS[k] = im; };
-    im.src = "assets/types/" + k + ".jpg";
-  });
+    im.onload = function () { window.__PORTRAITS[key] = im; cb(im); };
+    im.onerror = function () { cb(null); };
+    im.src = "assets/types/" + key + ".jpg";
+  }
 
-  makeCard = function () {
+  makeCard = function () { drawCard(false); };
+  function drawCard(retried) {
     if (selected.length === 0) { toast("先选一条最像你的"); return; }
     var t = TYPES[myType];
     var lines = selected.slice(0, 3).sort(function (a, b) { return a - b; }).map(function (i) { return t.checks[i]; });
@@ -1408,7 +1411,7 @@ function restart(){location.href=location.origin+location.pathname;}
     ctx.strokeStyle = "#b03a2e"; ctx.lineWidth = 3; ctx.strokeRect(40, 40, W - 80, H - 80);
     ctx.strokeStyle = "rgba(28,26,22,.14)"; ctx.lineWidth = 1; ctx.strokeRect(56, 56, W - 112, H - 112);
 
-    // 立绘
+    // 立绘（没加载好就先画一版没有图的，图到了重画）
     var img = window.__PORTRAITS[myType];
     var px = 230, py = 96, pw = 620, ph = 760;
     if (img) {
@@ -1441,10 +1444,14 @@ function restart(){location.href=location.origin+location.pathname;}
     ctx.fillStyle = "#f2ebdd"; ctx.font = '30px "Songti SC",serif'; ctx.textAlign = "center";
     ctx.fillText(String(t.gua).slice(0, 1), W - 118, 128);
 
+    if (!img && !retried) {
+      loadPortrait(myType, function () { drawCard(true); });
+    }
+
     cardDataURL = c.toDataURL("image/png");
     $("cardImg").src = cardDataURL;
     setTimeout(function () { $("m-card").classList.add("on"); }, 30);
-  };
+  }
 })();
 
 </script>
