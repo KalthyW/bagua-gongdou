@@ -1384,6 +1384,70 @@ function restart(){location.href=location.origin+location.pathname;}
   }
 })();
 </script>
+<script>
+/* 角色卡片：带 AI 立绘的版本（build_test2.py 注入，覆盖原来的 makeCard） */
+(function () {
+  var KEYS = ["qian", "xun", "li", "gen", "dui", "kan", "zhen", "kun"];
+  window.__PORTRAITS = {};
+  KEYS.forEach(function (k) {
+    var im = new Image();
+    im.onload = function () { window.__PORTRAITS[k] = im; };
+    im.src = "assets/types/" + k + ".jpg";
+  });
+
+  makeCard = function () {
+    if (selected.length === 0) { toast("先选一条最像你的"); return; }
+    var t = TYPES[myType];
+    var lines = selected.slice(0, 3).sort(function (a, b) { return a - b; }).map(function (i) { return t.checks[i]; });
+    var c = $("cardCanvas"), ctx = c.getContext("2d");
+    var W = 1080, H = 1440;
+
+    // 底：宣纸
+    ctx.fillStyle = "#f2ebdd"; ctx.fillRect(0, 0, W, H);
+    for (var y = 0; y < H; y += 4) { ctx.fillStyle = "rgba(28,26,22,.018)"; ctx.fillRect(0, y, W, 1); }
+    ctx.strokeStyle = "#b03a2e"; ctx.lineWidth = 3; ctx.strokeRect(40, 40, W - 80, H - 80);
+    ctx.strokeStyle = "rgba(28,26,22,.14)"; ctx.lineWidth = 1; ctx.strokeRect(56, 56, W - 112, H - 112);
+
+    // 立绘
+    var img = window.__PORTRAITS[myType];
+    var px = 230, py = 96, pw = 620, ph = 760;
+    if (img) {
+      ctx.save();
+      ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip();
+      var r = Math.max(pw / img.width, ph / img.height);
+      var dw = img.width * r, dh = img.height * r;
+      ctx.drawImage(img, px + (pw - dw) / 2, py + (ph - dh) / 2, dw, dh);
+      ctx.restore();
+      ctx.strokeStyle = "#c9a35e"; ctx.lineWidth = 2; ctx.strokeRect(px, py, pw, ph);
+    }
+
+    // 文字
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#7d766a"; ctx.font = '28px "PingFang SC",sans-serif';
+    ctx.fillText(t.gua + " · " + NATURE[myType], W / 2, 942);
+    ctx.fillStyle = "#1c1a16"; ctx.font = '76px "Songti SC","STSong",serif';
+    ctx.fillText(t.name, W / 2, 1034);
+    ctx.fillStyle = "#7d766a"; ctx.font = '30px "PingFang SC",sans-serif';
+    ctx.fillText(t.slogan, W / 2, 1092);
+
+    ctx.textAlign = "left"; ctx.fillStyle = "#1c1a16"; ctx.font = '28px "PingFang SC",sans-serif';
+    lines.forEach(function (ln, i) { ctx.fillText("· " + ln, 200, 1176 + i * 46); });
+
+    ctx.textAlign = "center"; ctx.fillStyle = "#b03a2e"; ctx.font = '22px "PingFang SC",sans-serif';
+    ctx.fillText("宫斗生存 · 你能活到第几集", W / 2, 1352);
+
+    // 右上角印章
+    ctx.fillStyle = "#b03a2e"; ctx.fillRect(W - 150, 86, 64, 64);
+    ctx.fillStyle = "#f2ebdd"; ctx.font = '30px "Songti SC",serif'; ctx.textAlign = "center";
+    ctx.fillText(String(t.gua).slice(0, 1), W - 118, 128);
+
+    cardDataURL = c.toDataURL("image/png");
+    $("cardImg").src = cardDataURL;
+    setTimeout(function () { $("m-card").classList.add("on"); }, 30);
+  };
+})();
+
+</script>
 <script src="config.js"></script>
 <script src="tracker.js"></script>
 </body>
