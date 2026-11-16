@@ -134,6 +134,9 @@
 #s-rel{display:none!important}
 .invite-hint{display:none!important}
 #relHex{display:none}
+#resPortrait{width:100%;display:block;border:1px solid rgba(201,163,94,.40);object-fit:cover;max-height:430px;object-position:center 18%;}
+.res-portrait{position:relative;margin:22px 0 4px;}
+.res-portrait:after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(180deg,transparent,rgba(20,16,14,.82));pointer-events:none;}
 /* ============================================================
    宫斗主题皮肤（build_test2.py 注入）
    深墨底 + 宫墙红 + 金线；封面加屋檐/灯笼/宫墙，答题与结果加窗棂纹
@@ -321,6 +324,7 @@ body{background:#080605;}
       <div class="res-name-row"><span id="rName" class="res-name"></span><span id="rSeal" class="name-seal serif"></span></div>
       <div id="rSlogan" class="res-slogan"></div>
     </div>
+    <div class="res-portrait"><img id="resPortrait" alt=""></div>
     <div class="rule"></div>
     <div id="rBody" class="res-body"></div>
     <button id="expandBtn" class="expand" onclick="toggleBody()">展开全文 ↓</button>
@@ -1454,6 +1458,9 @@ function restart(){location.href=location.origin+location.pathname;}
   }
 })();
 
+</script>
+<script>
+(function(){var _rr=renderResult;renderResult=function(){_rr.apply(null,arguments);var im=document.getElementById('resPortrait');if(im&&myType)im.src='assets/types/'+myType+'.jpg';};})();
 </script>
 <script src="config.js"></script>
 <script src="tracker.js"></script>
