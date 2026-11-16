@@ -131,6 +131,8 @@
     .rel-label{font-size:37px}
   }
 .gua-box,#rGuaSvg{display:none}
+#s-rel{display:none!important}
+.invite-hint{display:none!important}
 #relHex{display:none}
 </style>
 </head>
@@ -200,7 +202,6 @@
     </div>
     <div class="cta">
       <button class="btn-dark" onclick="makeCard()">生成我的专属卡片</button>
-      <button class="btn-ghost" onclick="relCta()">看看你俩是什么关系</button>
       <button class="btn-ghost retake" onclick="restart()">再测一次</button>
     </div>
   </section>
@@ -995,7 +996,7 @@ function finishQuiz(){
   myType=typeKeyFromScores();
   renderResult();
   show("s-result");
-  if(incomingType&&TYPES[incomingType]){
+  if(false){
     document.querySelector("#s-result .btn-ghost").textContent=`看看你和${TYPES[incomingType].name}是什么关系`;
   }
 }
@@ -1101,7 +1102,7 @@ function downloadCard(){
 }
 
 function relCta(){
-  if(incomingType&&TYPES[incomingType]){showRelation(incomingType,myType);}
+  if(false){showRelation(incomingType,myType);}
   else{
     const url=`${location.origin}${location.pathname}?r=${myType}`;
     $("shareLink").textContent=url;
@@ -1137,10 +1138,10 @@ function fallbackCopy(text){
 }
 function restart(){location.href=location.origin+location.pathname;}
 
-(function init(){
+(function init(){ return;
   if(incomingType&&returnMe&&TYPES[incomingType]&&TYPES[returnMe]){
     myType=returnMe;showRelation(incomingType,returnMe);
-  }else if(incomingType&&TYPES[incomingType]){
+  }else if(false){
     const hint=$("inviteHint"); if(hint) hint.style.display="flex";
     const btn=document.querySelector(".cover .btn-dark"); if(btn) btn.textContent="开始测测你俩";
   }
